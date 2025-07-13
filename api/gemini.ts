@@ -27,29 +27,30 @@ const matchResultSchema: any = {
   required: ["overallScore", "scoreBreakdown", "matchingKeywords", "pros", "cons", "summary"],
 };
 
-// Prompt for ONE job
+// Prompt for ONE job, updated for the new CSV format
 const createSingleJobPrompt = (seekerInfo: string, job: JobData): string => {
-  const jobId = job['JOB ID'] || job['企業 ID'] || `(ID不明)`;
   const jobInfoString = `
---- Job Details (ID: ${jobId}) ---
-- 企業名: ${job['企業名']}
-- ポジション: ${job['ポジション']}
-- 業務内容: ${job['業務内容']}
-- 募集背景: ${job['募集背景']}
-- 求める人材像: ${job['求める人材像'] || job['求める人材']}
-- 応募資格(概要): ${job['応募資格(概要)']}
-- 応募資格(詳細): ${job['応募資格(詳細)']}
-- 年収範囲: ${job['年収下限 [万円]']}万円〜${job['年収上限 [万円]']}万円
-- 勤務地: ${job['勤務地']}
-- ★キーワード★: ${job['★キーワード★']}
+--- 求人情報 ---
+- 企業名: ${job['企業名'] || 'N/A'}
+- ポジション: ${job['ポジション'] || 'N/A'}
+- 業務内容: ${job['業務内容'] || 'N/A'}
+- 募集背景: ${job['募集背景'] || 'N/A'}
+- 求める人材像: ${job['求める人材像'] || 'N/A'}
+- 応募資格(概要): ${job['応募資格(概要)'] || 'N/A'}
+- 応募資格(詳細): ${job['応募資格(詳細)'] || 'N/A'}
+- 年収範囲: ${job['年収下限 [万円]'] || 'N/A'}万円〜${job['年収上限 [万円] (選択肢型)'] || 'N/A'}万円
+- 勤務地: ${job['勤務地'] || 'N/A'}
+- ★キーワード★: ${job['★キーワード★'] || 'N/A'}
+- 待遇・福利厚生: ${job['待遇・福利厚生'] || 'N/A'}
 `;
 
   return `あなたは「morich」という人材紹介会社のエキスパートキャリアエージェントです。提供された「求職者情報」と、一つの「求人情報」を深く分析し、両者がどれだけマッチしているかを客観的に評価してください。
 以下の4つの観点と指定された比重に基づいて厳密に評価し、それぞれのスコア(0-100点)と、それらを加重平均した総合的なマッチスコア（0〜100点）を算出してください。
-- A. 職務経験・スキルフィット (比重: 40%)
-- B. カルチャー・志向性フィット (比重: 30%)
-- C. 条件マッチ (比重: 20%)
-- D. キーワードシナジー (比重: 10%)
+- A. 職務経験・スキルフィット (比重: 40%): 「業務内容」「応募資格」と求職者の経験がどれだけ合致しているか。
+- B. カルチャー・志向性フィット (比重: 30%): 「求める人材像」「募集背景」から、求職者の価値観やキャリアプランとの相性を評価。
+- C. 条件マッチ (比重: 20%): 「年収範囲」「勤務地」が求職者の希望と合っているか。
+- D. キーワードシナジー (比重: 10%): 「★キーワード★」と求職者のスキル・経験の関連性。
+
 最終的な出力は、必ず指定されたJSON形式に従ってください。評価の根拠となる「マッチングポイント」「ミスマッチポイント」、マッチングを促進する「一行サマリー」も生成してください。
 
 # 求職者情報
@@ -93,7 +94,6 @@ export default async function handler(request: Request): Promise<Response> {
     });
 
     const responseText = response.text;
-    // A simple guard against non-JSON responses from the API
     const jsonStart = responseText.indexOf('{');
     const jsonEnd = responseText.lastIndexOf('}') + 1;
     

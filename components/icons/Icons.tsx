@@ -59,6 +59,27 @@ const SparklesIcon: React.FC<IconProps> = ({ className = "w-5 h-5" }) => (
     </svg>
 );
 
+const ClearIcon: React.FC<IconProps> = ({ className = "w-5 h-5" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5A12.01 12.01 0 007.5 3" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.929 6.929A12.001 12.001 0 003 12" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.929 17.071A12.001 12.001 0 007.5 21" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 19.5a12.01 12.01 0 004.5 1.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.071 17.071a12.001 12.001 0 001.5-4.571" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.071 6.929A12.001 12.001 0 0016.5 3" />
+    </svg>
+);
+
+
+const DownloadIcon: React.FC<IconProps> = ({ className = "w-5 h-5" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+    </svg>
+);
+
+
 // Export all icons as a single object to prevent module resolution issues.
 export const Icons = {
     UploadIcon,
@@ -70,4 +91,6 @@ export const Icons = {
     CheckCircleIcon,
     XCircleIcon,
     SparklesIcon,
+    ClearIcon,
+    DownloadIcon,
 };

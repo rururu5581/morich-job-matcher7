@@ -1,10 +1,11 @@
 import { JobData, MatchResult } from '../types';
 
-// This function calls the new API that analyzes a SINGLE job.
+// This function calls the API that analyzes a SINGLE job.
 export const getSingleMatchAnalysis = async (seekerInfo: string, job: JobData): Promise<MatchResult> => {
   // Implement a timeout for the fetch request to prevent it from hanging indefinitely.
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30-second timeout
+  // Set timeout to 14 seconds, which is less than Vercel's hobby plan execution limit.
+  const timeoutId = setTimeout(() => controller.abort(), 14000); 
 
   try {
     const response = await fetch('/api/gemini', {
@@ -34,7 +35,7 @@ export const getSingleMatchAnalysis = async (seekerInfo: string, job: JobData): 
     
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-          throw new Error(`分析がタイムアウトしました`);
+          throw new Error(`分析がタイムアウトしました (14秒)`);
       }
       // Re-throw a more informative error to be caught by the App component
       throw new Error(`${error.message}`);

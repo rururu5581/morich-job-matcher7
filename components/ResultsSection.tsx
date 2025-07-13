@@ -2,15 +2,18 @@ import React from 'react';
 import { EnrichedJobData } from '../types';
 import { JobCard } from './JobCard';
 import { Spinner } from './Spinner';
+import { Icons } from './icons/Icons';
 
 interface ResultsSectionProps {
   results: EnrichedJobData[];
   isLoading: boolean;
   error: string;
   progressText?: string;
+  onClear: () => void;
+  onExport: () => void;
 }
 
-export const ResultsSection: React.FC<ResultsSectionProps> = ({ results, isLoading, error, progressText }) => {
+export const ResultsSection: React.FC<ResultsSectionProps> = ({ results, isLoading, error, progressText, onClear, onExport }) => {
   const hasError = !!error;
   const hasResults = results.length > 0;
 
@@ -46,6 +49,19 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ results, isLoadi
     <div className="bg-white p-6 rounded-lg shadow-lg min-h-[600px] flex flex-col">
       <h2 className="text-xl font-bold mb-4 text-gray-700 border-b pb-2 flex-shrink-0">マッチング結果</h2>
       
+      {hasResults && !isLoading && (
+        <div className="flex items-center gap-2 my-2 flex-shrink-0">
+          <button onClick={onClear} className="flex items-center gap-1.5 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-md transition-colors">
+            <Icons.ClearIcon className="w-4 h-4" />
+            結果をクリア
+          </button>
+          <button onClick={onExport} className="flex items-center gap-1.5 text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1.5 rounded-md transition-colors">
+            <Icons.DownloadIcon className="w-4 h-4" />
+            CSVエクスポート
+          </button>
+        </div>
+      )}
+
       <div className="flex-grow overflow-y-auto pr-2 -mr-2">
         {isLoading && !hasResults && <LoadingState />}
         
@@ -65,7 +81,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ results, isLoadi
               </div>
             )}
             {results.map((job, index) => (
-              <JobCard key={`${job['企業 ID'] || job['JOB ID'] || index}`} jobData={job} />
+              <JobCard key={`${job['企業名']}-${job['ポジション']}-${index}`} jobData={job} />
             ))}
           </div>
         )}

@@ -4,6 +4,8 @@ import { InputSection } from './components/InputSection';
 import { ResultsSection } from './components/ResultsSection';
 import { getSingleMatchAnalysis } from './services/geminiService';
 import { JobData, EnrichedJobData } from './types';
+import Papa from 'papaparse';
+
 
 const App: React.FC = () => {
   const [seekerInfo, setSeekerInfo] = useState<string>('');
@@ -58,6 +60,43 @@ const App: React.FC = () => {
     
   }, [seekerInfo, jobs]);
 
+  const handleClear = useCallback(() => {
+    setResults([]);
+    setError('');
+    setProgressText('');
+  }, []);
+
+  const handleExport = useCallback(() => {
+    if (results.length === 0) {
+      alert('エクスポートする結果がありません。');
+      return;
+    }
+    const dataToExport = results.map(res => ({
+      '企業名': res['企業名'],
+      'ポジション': res['ポジション'],
+      '総合スコア': res.matchResult.overallScore,
+      '経験スキルスコア': res.matchResult.scoreBreakdown.experienceAndSkills,
+      'カルチャースコア': res.matchResult.scoreBreakdown.cultureFit,
+      '条件スコア': res.matchResult.scoreBreakdown.conditions,
+      'キーワードスコア': res.matchResult.scoreBreakdown.keywords,
+      '一行サマリー': res.matchResult.summary,
+      'マッチングポイント': res.matchResult.pros.join('; '),
+      'ミスマッチ懸念点': res.matchResult.cons.join('; '),
+      'マッチングキーワード': res.matchResult.matchingKeywords.join(', '),
+    }));
+
+    const csv = Papa.unparse(dataToExport);
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `morich_match_results_${new Date().toISOString().slice(0,10)}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [results]);
+
   const isMatchButtonDisabled = isLoading || !seekerInfo || jobs.length === 0;
 
   return (
@@ -77,6 +116,8 @@ const App: React.FC = () => {
             isLoading={isLoading}
             error={error}
             progressText={progressText}
+            onClear={handleClear}
+            onExport={handleExport}
           />
         </div>
       </main>
