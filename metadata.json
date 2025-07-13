@@ -1,0 +1,5 @@
+{
+  "name": "morich Job Matcher",
+  "description": "An internal tool for morich career agents to intelligently match job seekers with available job positions based on their resumes and interview notes.",
+  "requestFramePermissions": []
+}
